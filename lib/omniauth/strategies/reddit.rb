@@ -10,7 +10,8 @@ module OmniAuth
 
       option :client_options, {
         site: 'https://www.reddit.com',
-        token_url: 'https://www.reddit.com/api/v1/access_token'
+        authorize_url: '/api/v1/authroize',
+        token_url: '/api/v1/access_token'
       }
 
       uid { raw_info['id'] }
@@ -26,7 +27,7 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= access_token.get('/api/v1/me').parsed || {}
+        @raw_info ||= {} # access_token.get('/api/v1/me').parsed || {}
       end
 
       def build_access_token
@@ -35,19 +36,8 @@ module OmniAuth
       end
 
       def basic_auth_header
-        'Basic ' + Base64.strict_encode64("#{options[:client_id]}:#{options[:client_secret]}")
-      end
-
-      MOBILE_USER_AGENTS = 'webos|ipod|iphone|mobile'
-
-      def request_phase
-        options[:client_options].authorize_url = mobile_request? ? 'https://www.reddit.com/api/v1/authorize' : 'https://www.reddit.com/api/v1/authorize'
-        super
-      end
-
-      def mobile_request?
-        ua = Rack::Request.new(@env).user_agent.to_s
-        ua.downcase =~ Regexp.new(MOBILE_USER_AGENTS)
+        auth = Base64.strict_encode64("#{options[:client_id]}:#{options[:client_secret]}")
+        "Basic #{auth}"
       end
 
       def callback_url
