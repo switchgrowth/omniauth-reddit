@@ -10,7 +10,7 @@ module OmniAuth
 
       option :client_options, {
         site: 'https://www.reddit.com',
-        authorize_url: '/api/v1/authroize',
+        authorize_url: '/api/v1/authorize',
         token_url: '/api/v1/access_token'
       }
 
