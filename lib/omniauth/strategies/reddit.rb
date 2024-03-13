@@ -9,16 +9,20 @@ module OmniAuth
       option :authorize_options, %i[scope duration]
 
       option :client_options, {
-        site: 'https://www.reddit.com',
-        authorize_url: '/api/v1/authorize',
-        token_url: '/api/v1/access_token'
+        site: 'https://ads-api.reddit.com',
+        authorize_url: 'https://www.reddit.com/api/v1/authorize',
+        token_url: 'https://www.reddit.com/api/v1/access_token'
       }
 
-      uid { raw_info['id'] }
+      uid { raw_info['data']['id'] }
 
       info do
         {
-          name: raw_info['name']
+          username: raw_info['data']['reddit_username'],
+          first_name: raw_info['data']['firstname'],
+          last_name: raw_info['data']['lastname'],
+          email: raw_info['data']['email'],
+          phone: raw_info['data']['phone']
         }
       end
 
@@ -27,7 +31,7 @@ module OmniAuth
       end
 
       def raw_info
-        @raw_info ||= {} # access_token.get('/api/v1/me').parsed || {}
+        @raw_info ||= access_token.get('/api/v3/me').parsed || {}
       end
 
       def build_access_token
