@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 require 'bundler/setup'
 require 'minitest/autorun'
-require 'mocha/setup'
+require 'minitest/unit'
 require 'rack/test'
 require 'webmock/minitest'
 require 'omniauth-reddit'
 require 'omniauth/strategies/reddit'
+require 'mocha/minitest'
 
 class StrategyTestCase < MiniTest::Unit::TestCase
   def setup
@@ -26,11 +29,11 @@ class StrategyIntegrationTestCase < MiniTest::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-    Rack::Builder.new {
-      use OmniAuth::Builder do 
-        provider :reddit, "id", "secret"
+    Rack::Builder.new do
+      use OmniAuth::Builder do
+        provider :reddit, 'id', 'secret'
       end
-      run lambda { |env| [404, {'Content-Type' => 'text/plain'}, [env.key?('omniauth.auth').to_s]] }
-    }.to_app
+      run ->(env) { [404, { 'Content-Type' => 'text/plain' }, [env.key?('omniauth.auth').to_s]] }
+    end.to_app
   end
 end
